@@ -122,7 +122,7 @@ Vagrant.configure("2") do |config|
  
    config.vm.network "private_network", ip: "192.168.99.112"   
    config.vm.synced_folder ".", "/vagrant", disabled: true  #disable the folder share, you can install it later if needed
-
+   config.vm.provision "shell", inline: 'service network restart'
   end    
 
 ${VAGRANTFILE_ADD:-}
