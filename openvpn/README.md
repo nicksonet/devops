@@ -44,10 +44,10 @@ set_var EASYRSA_DIGEST          "sha512"
 Create Certificate Authority
 ./easyrsa build-ca  
 
-       *("./easyrsa build-ca nopass" - без пароля, опционально)
+       *("./easyrsa build-ca nopass" - без пароля. Крайне не рекомендуется)
 
-/etc/openvpn/keys/easy-rsa-master/easyrsa3/pki/private/ca.key   - - -  секретный ключ для подписывания
-/etc/openvpn/keys/easy-rsa-master/easyrsa3/pki/ca.crt           - - -  открытый ключ, для передачи
+/etc/openvpn/keys/easy-rsa-master/easyrsa3/pki/private/ca.key   - - -  секретный ключ для подписывания сертификатов
+/etc/openvpn/keys/easy-rsa-master/easyrsa3/pki/ca.crt           - - -  открытый ключ, для передачи на сторону клиентов
 
 4. Сертификаты сервера OpenVPN
 
@@ -73,7 +73,7 @@ Create Certificate Authority
 
 ----------------------------------------
 
-5. Скопировал ключи из  /etc/openvpn/keys/easy-rsa-master/easyrsa3 в  /etc/openvpn
+5. Скопировать ключи из  /etc/openvpn/keys/easy-rsa-master/easyrsa3 в  /etc/openvpn
  cp pki/ca.crt /etc/openvpn/
  cp pki/dh.pem /etc/openvpn/
  cp pki/crl.pem /etc/openvpn/
@@ -97,6 +97,7 @@ chmod 600 server.key, ta.key  !
 
 
 7. Ключи для клиента
+
  cd /etc/openvpn/keys/easy-rsa-master/easyrsa3
  ./easyrsa gen-req client1 nopass
  ./easyrsa sign-req client client1
@@ -115,6 +116,7 @@ ca.crt;
 ta.key;
 
 -----------------------------------------------------------------------------------------------------
+
 #8. Конфигурационный файл сервера
 
 port 3876
