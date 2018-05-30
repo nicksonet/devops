@@ -135,7 +135,7 @@ dh keys/dh.pem
 tls-auth keys/ta.key 0
 server 172.16.10.0 255.255.255.0
 #ifconfig-pool-persist ipp.txt
-ifconfig 172.16.10.1 172.16.10.2
+ifconfig 172.16.10.1 255.255.255.0
 # Add route to Client routing table for the OpenVPN Server
 push "route 172.16.10.1 255.255.255.255"
 # Add route to Client routing table for the OpenVPN Subnet
@@ -232,6 +232,7 @@ openvpn /etc/openvpn/client.conf
 Хорошее руководство
 
 https://www.dmosk.ru/instruktions.php?object=openvpn-centos-install
+http://lithium.opennet.ru/articles/openvpn/openvpn-howto.html
 
 
 
