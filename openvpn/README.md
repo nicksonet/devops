@@ -158,27 +158,45 @@ duplicate-cn
 
 
 Конфиг клиента
-
+```
 client
-dev tap
-proto udp-client
-remote 192.168.100.3 3876
 resolv-retry infinite
 nobind
+remote 185.186.244.221 443
+proto udp
+dev tun
+comp-lzo
+tls-client
+key-direction 1
+float
+keepalive 10 120
 persist-key
 persist-tun
-mute-replay-warnings
-ns-cert-type server
-
-tls-client
-tls-auth /etc/openvpn/ta.key
+verb 5
 
 ca /etc/openvpn/ca.crt
 cert /etc/openvpn/client.crt
 key /etc/openvpn/client.key
 
-verb 3
+or 
 
+<ca>
+-----BEGIN CERTIFICATE-----
+-----END CERTIFICATE-----
+</ca>
+<tls-auth>
+-----BEGIN OpenVPN Static key V1-----
+-----END OpenVPN Static key V1-----
+</tls-auth>
+<cert>
+-----BEGIN CERTIFICATE-----
+-----END CERTIFICATE-----
+</cert>
+<key>
+-----BEGIN PRIVATE KEY-----
+-----END PRIVATE KEY-----
+</key>
+```
 
 -----------------------------------------------------------------------------------
 
@@ -205,6 +223,11 @@ openvpn /etc/openvpn/client.conf
 Для возможности авторизации только по IP адресу выданному при VPN соединении (192.168.33.100) запустить https://github.com/nicksonet/devops/blob/master/openvpn/iptables.sh
 
 Для проверки, с другой станции запустить сканирование портов утилитой nmap -p "*" 192.168.33.10 192.168.100.10
+
+
+Хорошее руководство
+
+https://www.dmosk.ru/instruktions.php?object=openvpn-centos-install
 
 
 
