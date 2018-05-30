@@ -119,45 +119,40 @@ ta.key;
 
 #8. Конфигурационный файл сервера
 
-port 3876
-proto udp-server
-dev tap
-
-ca /etc/openvpn/ca.crt
-cert /etc/openvpn/server.crt
-key /etc/openvpn/server.key
-dh /etc/openvpn/dh2048.pem
-
-crl-verify /etc/openvpn/crl.pem
-
-server 192.168.33.0 255.255.255.0
-ifconfig-pool-persist ipp.txt
-
+```
+local 185.186.244.221
+port 443
+proto udp
+dev tun
+ca keys/ca.crt
+cert keys/issued/vpn-server.crt
+key keys/private/vpn-server.key
+dh keys/dh.pem
+tls-auth keys/ta.key 0
+server 172.16.10.0 255.255.255.0
+#ifconfig-pool-persist ipp.txt
+ifconfig 172.16.10.1 172.16.10.2
+# Add route to Client routing table for the OpenVPN Server
+push "route 172.16.10.1 255.255.255.255"
+# Add route to Client routing table for the OpenVPN Subnet
+push "route 172.16.10.0 255.255.255.0"
 push "redirect-gateway def1"
-
 push "dhcp-option DNS 8.8.8.8"
-
 keepalive 10 120
-
-client-config-dir /etc/openvpn/ccd # передача IP клиенту. Формат /etc/openvpn/ccd/client => ifconfig-push 192.168.33.10 255.255.255.0
-
-tls-server
-tls-auth /etc/openvpn/ta.key
-tls-timeout 120
-
-max-clients 10
-
-user nobody
-group nobody
-
+max-clients 32
+client-to-client
 persist-key
 persist-tun
-
-status openvpn-status.log
-
-log /var/log/openvpn.log
-
-verb 6
+status /var/log/openvpn/openvpn-status.log
+log-append /var/log/openvpn/openvpn.log
+verb 4
+mute 20
+daemon
+mode server
+tls-server
+comp-lzo
+duplicate-cn
+```
 
 ----------------------------------------------------------------------------------
 
