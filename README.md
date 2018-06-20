@@ -11,7 +11,5 @@ https://hackernoon.com/the-best-architecture-with-docker-and-kubernetes-myth-or-
 
 ### Security 
 
-#### Check security Kernel param
-```
-https://github.com/a13xp0p0v/kconfig-hardened-check
-```
+
+* [Check security Kernel param](https://github.com/a13xp0p0v/kconfig-hardened-check)
