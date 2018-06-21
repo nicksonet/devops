@@ -30,5 +30,8 @@ echo $TOKEN | base 64 -d
 
 use base 64 -D for MAC shell 
 
-
+```
+hot to configure gitlab for kuberntenetes
+https://edenmal.moe/post/2017/GitLab-Kubernetes-Perfect-Match-for-Continuous-Delivery-with-Container/#step-6-add-docker-login-information-to-kubernetes
+```
 
