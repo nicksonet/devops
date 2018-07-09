@@ -35,3 +35,9 @@ hot to configure gitlab for kuberntenetes
 https://edenmal.moe/post/2017/GitLab-Kubernetes-Perfect-Match-for-Continuous-Delivery-with-Container/#step-6-add-docker-login-information-to-kubernetes
 ```
 
+#### Use configmap
+
+Add config map to kubernetes
+```
+kubectl create configmap test --from-file=config.json=config.json -n stage
+```
