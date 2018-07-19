@@ -1,0 +1,127 @@
+stages:
+ - build 
+ - review
+ - deploy
+
+build:
+  stage: build
+  image: docker:git
+  services:
+    - docker:dind
+  script:
+    - setup_docker
+    - build
+  variables:
+    DOCKER_HOST: "tcp://docker-dind:2375"
+
+review:
+  stage: review
+  image: registry.stgtr.org/gettransfer/docker-images/helmctl:latest
+  script:
+    #- install_dependencies
+    - deploy
+  variables:
+    KUBE_NAMESPACE: stage
+  only:
+    - deployment
+    - development
+
+deploy:
+  stage: deploy
+  image: registry.stgtr.org/gettransfer/docker-images/helmctl:latest
+  script:
+    #- install_dependencies
+    - deploy
+  variables:
+    KUBE_NAMESPACE: prod
+  only:
+    - master
+  
+.define_functions: &define_functions |
+  [[ "$TRACE" ]] && set -x
+  export CI_REGISTRY="registry.stgtr.org"
+  export CI_PROJECT_PATH="gettransfer/docker-images/google-proxy"
+  export CI_APPLICATION_REPOSITORY=$CI_REGISTRY/$CI_PROJECT_PATH
+  export CI_APPLICATION_TAG=$CI_COMMIT_REF_SLUG
+  export CI_CONTAINER_NAME=ci_job_build_${CI_JOB_ID}
+  export TILLER_NAMESPACE="kube-system"
+  export KUBECONFIG=$KUBECONFIG:config
+
+  function setup_docker() {
+
+    if ! docker info &>/dev/null; then
+      if [ -z "$DOCKER_HOST" -a "$KUBERNETES_PORT" ]; then
+        export DOCKER_HOST='tcp://docker-dind:2375'
+      fi
+    fi
+  }
+  
+  function build() {
+
+    echo "Building Dockerfile-based application..."
+    echo `git show --format="%h" HEAD | head -1` > commit.txt
+    echo `git rev-parse --abbrev-ref HEAD` > build_info.txt
+    docker build  --no-cache -t "$CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG" .
+
+    if [[ -n "$CI_REGISTRY_USER" ]]; then
+      echo "Logging to GitLab Container Registry with CI credentials..."
+      echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin
+      echo ""
+    fi
+
+    echo "Pushing to GitLab Container Registry..."
+    docker push "$CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG"
+    docker pull "$CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG"
+    docker tag  "$CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG" "$CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG"
+    docker push "$CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG"
+    echo ""
+    
+    if [[ ${CI_COMMIT_REF_SLUG} == "deployment" ]] ; then 
+      docker tag  "$CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG" "$CI_APPLICATION_REPOSITORY:latest" 
+      docker push "$CI_APPLICATION_REPOSITORY:latest"
+    fi
+  }
+
+  function install_dependencies() {
+
+    apk add -U openssl curl tar gzip bash ca-certificates git
+    wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://raw.githubusercontent.com/sgerrand/alpine-pkg-glibc/master/sgerrand.rsa.pub
+    wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.23-r3/glibc-2.23-r3.apk
+    apk add glibc-2.23-r3.apk
+    rm glibc-2.23-r3.apk
+
+    curl https://storage.googleapis.com/pub/gsutil.tar.gz | tar -xz -C $HOME
+    export PATH=${PATH}:$HOME/gsutil
+
+    curl https://kubernetes-helm.storage.googleapis.com/helm-v2.7.2-linux-amd64.tar.gz | tar zx
+
+    mv linux-amd64/helm /usr/bin/
+    helm version --client
+
+    curl  -o /usr/bin/sync-repo.sh https://raw.githubusercontent.com/kubernetes/helm/master/scripts/sync-repo.sh
+    chmod a+x /usr/bin/sync-repo.sh
+
+    curl -L -o /usr/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+    chmod +x /usr/bin/kubectl
+    kubectl version --client
+  }
+
+  function deploy() {
+
+    track="${1-stable}"
+    name="$CI_ENVIRONMENT_SLUG"
+
+    if [[ "$track" != "stable" ]]; then
+      name="$name-$track"
+    fi
+
+    echo "Deploy helm release $name to $KUBE_NAMESPACE"
+    echo ${KUBE_CONFIG} | base64 -d > config
+    helm init --client-only
+    helm delete stage --purge 
+    helm install --name=${KUBE_NAMESPACE} ./Charts --namespace=${KUBE_NAMESPACE}
+    helm ls
+  }
+
+before_script:
+- *define_functions
