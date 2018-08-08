@@ -249,3 +249,7 @@ Get cluster info:
     function dex(){
       docker exec -it $1 bash
     }
+
+### Lint
+
+https://jsonlint.com
