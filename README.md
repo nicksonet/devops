@@ -265,3 +265,8 @@ https://github.com/kubernetes-incubator/nfs-provisioner
 ### Tools for leaning / 
 
 https://sysadmin.pm/termtosvg/
+
+
+### Validation kubernetes configuration
+
+https://github.com/garethr/kubeval
