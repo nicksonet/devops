@@ -260,3 +260,8 @@ https://blog.sebastian-daschner.com/entries/multiple-kubernetes-volumes-director
 https://vmware.github.io/container-service-extension/nfs_static_pv.html
 https://docs.openshift.org/latest/install_config/storage_examples/shared_storage.html
 https://github.com/kubernetes-incubator/nfs-provisioner
+
+
+### Tools for leaning / 
+
+https://sysadmin.pm/termtosvg/
