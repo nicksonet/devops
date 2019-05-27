@@ -275,3 +275,11 @@ https://github.com/garethr/kubeval
 ## Подготовка к интервью на SRE
 
 https://github.com/mxssl/sre-interview-prep-guide
+
+
+## Perfomance Tools 
+
+https://medium.com/netflix-techblog/netflix-at-velocity-2015-linux-performance-tools-51964ddb81cf
+https://cdn.oreillystatic.com/en/assets/1/event/122/Linux%20perf%20tools%20Presentation.pdf
+
+
