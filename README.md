@@ -270,3 +270,8 @@ https://sysadmin.pm/termtosvg/
 ### Validation kubernetes configuration
 
 https://github.com/garethr/kubeval
+
+
+## Подготовка к интервью на SRE
+
+https://github.com/mxssl/sre-interview-prep-guide
